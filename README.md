@@ -129,7 +129,8 @@ Usage
 
 
 #####
-##RELEASE NOTES
+Release Notes
+-
 
 v3.0.0, 2020.01.01, allow genome structure variation calling using the PEA method.
 
