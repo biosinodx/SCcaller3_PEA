@@ -1,4 +1,4 @@
-SCcaller
+SCcaller with the PEA method
 =
 Single Cell Caller (SCcaller) - Identify single nucleotide variations (SNVs), short insertions, short deletions (INDELs) and genome structural variations (GSVs) from single cell sequencing data
 
