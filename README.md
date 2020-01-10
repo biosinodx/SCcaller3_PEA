@@ -131,7 +131,7 @@ Usage
 #####
 ##RELEASE NOTES
 
-v3.0.0, 2020.01.01, allow genome structure variation calling using the PEA method; and integrate SNVs and INDELs all together
+v3.0.0, 2020.01.01, allow genome structure variation calling using the PEA method.
 
 v2.0.0, 2019.04.01, allowing parallel processing, optimizing I/O, optimizing pipeline, output in vcf format, and fixing bugs
 
