@@ -203,7 +203,7 @@ ${hsnp} is the path to a list of heterozygous SNPs in the sample in vcf format.
 ${s} is the line number of the first SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze; ${e} is the line number of the last SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze.
 
 #####
-Expected output.
+Expected output
 -
 The above output files of SVs: 
 
