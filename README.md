@@ -23,14 +23,11 @@ Dependence
 -
 Linux OS (CentOS7 tested)
 
-Python3 (version 3.6.9 tested)
-Python packages: argparse, os, re, argpars, sys, string, scipy
+Python3 (version 3.6.9 tested) with packages: argparse, os, re, argpars, sys, string, scipy
 
-R (version 3.6.0 tested)
-R packages: VariantAnnotation, StructuralVariantAnnotation, stringr, Biostrings, BSgenome with BSgenome.Hsapiens.UCSC.hg38 (for hg38 genome)
+R (version 3.6.0 tested) with packages: VariantAnnotation, StructuralVariantAnnotation, stringr, Biostrings, BSgenome with BSgenome.Hsapiens.UCSC.hg38 (for hg38 genome)
 
-Manta (version 1.6.0 tested)
-https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
+Manta (version 1.6.0 tested): https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
 
 Samtools (version 1.9.0 tested)
 
@@ -41,9 +38,9 @@ Installation guide
 -
 The scripts can be used directly without installing.
 
-
-# Input data requirement
-
+#####
+Input data requirement
+-
 1. bam file(s): for germline SV calling, require bam file of the sample; for somatic SV calling, require bam files of both a single cell and bulk DNA of the cell's origin
 
 2. hSNP in vcf format
@@ -51,8 +48,9 @@ The scripts can be used directly without installing.
 3. reference genome in fasta format
 
 
-# USAGE STEP 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
-
+#####
+USAGE STEP 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
+-
 This step is done with using Manta, but it can be replaced by other software tools. 
 
 1.1 For germline SVs, run the following shell scripts in Linux,
@@ -102,9 +100,9 @@ ${bulk} is the bulk DNA sample name.
 
 ${cell} is the single cell sample name.
 
-
-# USAGE STEP 2. SV-type annotation
-
+#####
+USAGE STEP 2. SV-type annotation
+-
 2.1 for germline SVs, run the following shell scripts in Linux,
 
 zcat ${sn}/results/variants/diploidSV.vcf.gz > ${sn}/results/variants/diploidSV.vcf
@@ -133,9 +131,9 @@ ${bulk} is the bulk DNA sample name.
 
 ${cell} is the single cell sample name.
 
-
-# USAGE STEP 3. enhanced reference genome construction, realignment and SV calling
-
+#####
+USAGE STEP 3. enhanced reference genome construction, realignment and SV calling
+-
 3.1 for germline SVs, run the following shell scripts in Linux,
 
 ${vcf}=$(pwd)/${sn}.manta.sc3input.vcf
@@ -204,10 +202,10 @@ ${hsnp} is the path to a list of heterozygous SNPs in the sample in vcf format.
 
 ${s} is the line number of the first SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze; ${e} is the line number of the last SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze.
 
-
-# Expected output.
-
-The above output files of SVs 
+#####
+Expected output.
+-
+The above output files of SVs: 
 
 Germline SVs: ${sn}/sv_temp_${s}_${e}/pool.vcf
 
@@ -232,8 +230,9 @@ refBSVcount: no. reads supporting SV genotype in the enhance reference genome C2
 LA0:LA1:LB0:LB1: likelihoods for models h0, h1 based on the C1-CSV pair, and models h0, h1 based on the C2-CSV pair, respectfully.
 
 
-# Release Notes
-
+#####
+Release Notes
+-
 v3.1.0, 2020.08.01, revised significantly the PEA method to enable a full genome coverage on SV calling; and kept only PEA method in this release (without previous method for SNV and INDEL analysis)
 
 v3.0.0, 2020.01.01, allowed genome structure variation calling using the PEA method.
