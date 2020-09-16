@@ -1,16 +1,12 @@
-SCcaller with the PEA method
+PEA: Identify genome structural variations SVs from single-cell whole-genome sequencing data
 =
-Single Cell Caller (SCcaller) - Identify single nucleotide variations (SNVs), short insertions, short deletions (INDELs) and genome structural variations (GSVs) from single cell sequencing data
+Version 3.1.0
 
-Version 3.0.0
-
-Updated date: 2020.01.01
+Updated date: 2020.08.01
 
 Cite us:
 
-For SNV and INDEL calling (the SCcaller method): Dong X et al. Accurate identification of single-nucleotide variants in whole-genome-amplified single cells. Nat Methods. 2017 May;14(5):491-493. doi: 10.1038/nmeth.4227.
-
-For GSV calling (the PEA method): Dong X et al. Identifying genome structural variations in single cells. In submission.
+Dong X et al. Identifying genome structural variations in single cells. In submission.
 
 #####
 Author and License
@@ -21,132 +17,240 @@ Email: biosinodx@gmail.com (X.D.), xiao.dong@einsteinmed.org (X.D.), spsc83@gmai
 
 Licensed under the GNU Affero General Public License version 3 or later
 
+
 #####
 Dependence
 -
-    sv: python modules sys, logging, os, re, subprocess, time, copy, struct, itertools, operator, multiprocessing, socket, Queue, collections, numpy, math, datetime
-        samtools v.1.9+ (Other versions not tested)
-        bwa v.0.7.10-r806-dirty
-        SSAKE v3.8.3
-    si: python modules os, argparse, sys, subprocess, re, collections, itertools, logging, time, functiontools, random, string, math, numpy, multiprocessing, pysam(0.15.1)
-        samtools v.1.9+ (Other versions not tested)
+Linux OS (CentOS7 tested)
+
+Python3 (version 3.6.9 tested)
+Python packages: argparse, os, re, argpars, sys, string, scipy
+
+R (version 3.6.0 tested)
+R packages: VariantAnnotation, StructuralVariantAnnotation, stringr, Biostrings, BSgenome with BSgenome.Hsapiens.UCSC.hg38 (for hg38 genome)
+
+Manta (version 1.6.0 tested)
+https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
+
+Samtools (version 1.9.0 tested)
+
+BWA (version 0.7.17 tested)
 
 #####
-Usage
+Installation guide
 -
-    python sccaller.py <command> <parameters>
-* Commands:
-  * Structure variation calling (the PEA method)<br>
-  
-        sv  <file_ref>: reference file
-            <cpu_num>: number of processes
-            <job_size>: the candidate SVs will be divided in to pieces of job_size lines
-            <single_cell_bam>: bam file of a single cell
-            <single_cell_fq1>: the sequence file
-            <single_cell_fq2>: the sequence file
-            <bulk_bam>: bam file of bulk
-            <hSNP>: hSNP file
-            <r1>: the min number of reads support related SNP
-            <r2>: the min number of reads do not support related SNP
-            <output>: output file name
-            <ifq_dir>: the directory contain the indexs of sequence files
-  * SNVs and INDELs calling (the SCcaller method)<br>
-    
-          si  -b, --bam:      bam file of a single cell
-              -f, --fasta:    fasta file of reference genome
-              -o, --output:   output file name
-              -s, --snp_in:   Candidate snp input file, either from dbsnp data or heterozygous snp (hsnp) data of the bulk, for known heterogous call. file type: bed (1-based) or vcf.
-              -t, --snp_type: SNP type for --snp_in. It could be either "dbsnp" or "hsnp". When choosing dbsnp, --bulk bulk_bamfile is required.
-
-            Optional arguments:
-              --RD:           min. read depth of known heterogous SNP called from bulk when choosing -t dbsnp. Default: 20. Recommand: 10,15,20, depending on average read depth
-              --bias:         default theta (bias) for SNVs whose theta cannot be estimated. Default=0.75
-              --bulk:         bamfile of bulk DNA sequencing
-              --bulk_min_depth:min. reads for bulk. Default: 20
-              --bulk_min_mapq:min. mapQ for bulk. Default: 20
-              --bulk_min_var: min. num. variant supporting reads for bulk. Default: 1
-              --format:       output file format. bed or vcf. Default: vcf
-              --head:         first chromosome as sorted as in fasta file to analyze (1-based). Default: the first chr. in the fasta
-              --mapq:         min. mapQ. Default: 40
-              --min_depth:    min. reads. Default: 10
-              --minvar:       min. num. variant supporting reads. Default: 4
-              --null:         min. allelic fraction considered. Default=0.03
-              --tail:         last chromosome as sorted as in fasta file to analyze (1-based). Default: the last chr. in the fasta
-              -d, --wkdir:    work dir. Default: ./
-              -e, --engine:   pileup engine. samtools or pysam. Default: pysam
-              -h, --help:     Help
-              -l, --lamb:     lambda for bias estimation. Default=10000
-              -n, --cpu_num:  num. processes. Default: 1
-              -w, --work_num: num. splits per chromosome for multi-process computing. Default: 100
+The scripts can be used directly without installing.
 
 
-    * I. Basic usage: calling SNVs and INDELs from a cell
+# Input data requirement
 
-      * I.a When you have heterozygous SNPs pre-called from bulk DNA of the same subject,<br>
-      
-            python sccaller.py si\
-              --bam cell.bam \ # bam file of a single cell
-              --fasta ref.fa \ # reference genome in fasta format
-              --output cell.vcf \ # output vcf file
-              --snp_type hsnp \ # using heterozygous SNPs pre-called from bulk DNA
-              --snp_in hsnp.vcf (or bed) \ # vcf or bed file of heterozygous SNPs pre-called from bulk DNA
-              --cpu_num 8 \ # using 8 cpu threads
-              --engine samtools # using samtools engine
+1. bam file(s): for germline SV calling, require bam file of the sample; for somatic SV calling, require bam files of both a single cell and bulk DNA of the cell's origin
 
-      * I.b When you do not have heterozygous SNPs pre-called from bulk DNA of the same subject, obtain SNPs from dbSNP or other databases,<br>
-      
+2. hSNP in vcf format
 
-            python sccaller.py si\
-              --bam cell.bam \ # bam file of a single cell
-              --fasta ref.fa \ # reference genome in fasta format
-              --output cell.vcf \ # output vcf file
-              --snp_type dbsnp \ # using SNPs from dbSNP database (or other database)
-              --snp_in dbsnp.vcf (or bed) \ # vcf or bed file containing all SNPs in dbSNP (or other) database
-              --cpu_num 8 \ # using 8 cpu threads
-              --engine samtools # using samtools engine
-
-    * II. Calling `somatic` SNVs and INDELs not present in bulk DNA
-
-      * II.a Step 1. Calling SNVs and INDELs from a cell together with bulk DNA in input,<br>
-      
-            python sccaller.py si\
-              --bam cell.bam \ # bam file of a single cell
-              --bulk bulk.bam \ # bam file of bulk DNA
-              --fasta ref.fa \ # reference genome in fasta format
-              --output cell.vcf \ # output vcf file
-              --snp_type hsnp \ # using heterozygous SNPs pre-called from bulk DNA
-              --snp_in hsnp.vcf (or bed) \ # vcf or bed file of heterozygous SNPs pre-called from bulk DNA
-              --cpu_num 8 \ # using 8 cpu threads
-              --engine samtools # using samtools engine
-
-      * II.b Step 2. Filtering out SNVs and INDELs observed in bulk or sequencing depth <= 20x in the single cell<br>
-      
-            grep '0/1' cell.vcf | grep 'True' | awk '$7=="." && length($5)==1' | awk -F "[:,]" '$8+$9>=20' > cell.somatic.snv.vcf
-            grep '0/1' cell.vcf | grep 'True' | awk '$7=="." && length($5)>1' | awk -F "[:,]" '$8+$9>=20' > cell.somatic.indel.vcf
-
-    * III. Notes on X/Y chromosome in males and ploidy<br>
-      Please note, sccaller was designed assuming diploidy genome and two copies of chromosomes. It cannot be used for calling mutations from X/Y chromosome of a male subject.
+3. reference genome in fasta format
 
 
-#####
-Release Notes
--
+# USAGE STEP 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
 
-v3.0.0, 2020.01.01, allow genome structure variation calling using the PEA method.
+This step is done with using Manta, but it can be replaced by other software tools. 
 
-v2.0.0, 2019.04.01, allowing parallel processing, optimizing I/O, optimizing pipeline, output in vcf format, and fixing bugs
+1.1 For germline SVs, run the following shell scripts in Linux,
 
-v1.21, 2018.08.18, fixing bugs
+mkdir -p ${sn}
 
-v1.2, 2017.05.01, allow INDEL calling, release version
+${manta_dir}/bin/configManta.py \
+  --normalBam=${bam} \
+  --referenceFasta=${ref} \
+  --runDir=${sn}
+
+$(pwd)/${sn}/runWorkflow.py
+
+In the above,
+
+${manta_dir} is the path to the directory of Manta software.
+
+${bam} is the path to sample bam file.
+
+${ref} is the path to reference genome fasta file.
+
+${sn} is the sample name.
+
+1.2 For somatic SVs, i.e., SVs in a single cell but not in bulk DNA of its origin, run the following shell scripts in Linux,
+
+mkdir -p ${bulk}.${cell}
+
+${manta_dir}/bin/configManta.py \
+  --normalBam=${bulk_bam} \
+  --tumorBam=${cell_bam} \
+  --referenceFasta=${ref} \
+  --runDir=${bulk}.${cell}
+
+$(pwd)/${bulk}.${cell}/runWorkflow.py
+
+In the above,
+
+${manta_dir} is the path to the directory of Manta software.
+
+${bulk_bam} is the path to bulk DNA bam file.
+
+${cell_bam} is the path to single cell bam file.
+
+${ref} is the path to reference genome fasta file.
+
+${bulk} is the bulk DNA sample name.
+
+${cell} is the single cell sample name.
+
+
+# USAGE STEP 2. SV-type annotation
+
+2.1 for germline SVs, run the following shell scripts in Linux,
+
+zcat ${sn}/results/variants/diploidSV.vcf.gz > ${sn}/results/variants/diploidSV.vcf
+
+Rscript ./manta-annotate-concensus.R ${sn}
+
+python3 ./manta_keepmate1.py -i ${sn}.manta.concensus.vcf -o ${sn}.manta.sc3input.vcf
+
+In the above,
+
+${sn} is the sample name.
+
+2.2 for somatic SVs, run the following shell scripts in Linux, 
+
+zcat ${bulk}.${cell}/results/variants/somaticSV.vcf.gz | grep "#" > ${bulk}.${cell}/results/variants/somaticSV.pass.vcf
+
+zcat ${bulk}.${cell}/results/variants/somaticSV.vcf.gz | grep -v "#" | awk 'length($1)<=5 && $7=="PASS"' >> ${bulk}.${cell}/results/variants/somaticSV.pass.vcf
+
+Rscript ./manta-annotate-concensus-somatic.R ${bulk}.${cell}
+
+python3 ./manta_keepmate1.py -i ${bulk}.${cell}.manta.concensus.vcf -o ${bulk}.${cell}.manta.sc3input.vcf
+
+In the above,
+
+${bulk} is the bulk DNA sample name.
+
+${cell} is the single cell sample name.
+
+
+# USAGE STEP 3. enhanced reference genome construction, realignment and SV calling
+
+3.1 for germline SVs, run the following shell scripts in Linux,
+
+${vcf}=$(pwd)/${sn}.manta.sc3input.vcf
+
+python3 pea_s3p1.py \
+  --cellid ${sn} \
+  --dellyvcf ${vcf} \
+  --wkdir ${sn} \
+  --cbam ${bam} \
+  -g ${ref} \
+  -s ${s} -e ${e}
+
+python3 pea_s3p2.py \
+  --cellid ${sn} \
+  --dellyvcf ${vcf} \
+  --wkdir ${sn} \
+  --cbam ${bam} \
+  -g ${ref} \
+  --hsnp ${hsnp} \
+  -s ${s} -e ${e}
+
+In the above,
+
+${sn} is the sample name.
+
+${bam} is the path to sample bam file.
+
+${ref} is the path to reference genome fasta file.
+
+${hsnp} is the path to a list of heterozygous SNPs in the sample in vcf format.
+
+${s} is the line number of the first SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze; ${e} is the line number of the last SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze.
+
+3.2 for somatic SVs, run the following shell scripts in Linux, 
+
+${vcf}=$(pwd)/${bulk}.${cell}.manta.sc3input.vcf
+
+python3 pea_s3p1.py \
+  --cellid ${cell} \
+  --dellyvcf ${vcf} \
+  --wkdir ${bulk}.${cell} \
+  --cbam ${cell_bam} \
+  -g ${ref} \
+  -s ${s} -e ${e}
+
+python3 pea_s3p2.py \
+  --cellid ${cell} \
+  --dellyvcf ${vcf} \
+  --wkdir ${bulk}.${cell} \
+  --cbam ${cell_bam} \
+  -g ${ref} \
+  --hsnp ${hsnp} \
+  -s ${s} -e ${e}
+
+In the above,
+
+${bulk} is the bulk DNA sample name.
+
+${cell} is the single cell sample name.
+
+${cell_bam} is the path to single cell bam file.
+
+${ref} is the path to reference genome fasta file.
+
+${hsnp} is the path to a list of heterozygous SNPs in the sample in vcf format.
+
+${s} is the line number of the first SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze; ${e} is the line number of the last SV in the ${bulk}.${cell}.manta.sc3input.vcf that a user want to analyze.
+
+
+# Expected output.
+
+The above output files of SVs 
+
+Germline SVs: ${sn}/sv_temp_${s}_${e}/pool.vcf
+
+Somatic SVs: ${bulk}.${cell}/sv_temp_${s}_${e}/pool.vcf
+
+with the following information,
+
+GT: genotype
+
+thetaA: theta for the enhance reference genome C1-CSV pair
+
+thetaB: theta for the enhance reference genome C2-CSV pair
+
+refAAcount: no. reads supporting ref genotype in the enhance reference genome C1-CSV pair
+
+refASVcount: no. reads supporting SV genotype in the enhance reference genome C1-CSV pair
+
+refBBcount: no. reads supporting ref genotype in the enhance reference genome C2-CSV pair
+
+refBSVcount: no. reads supporting SV genotype in the enhance reference genome C2-CSV pair
+
+LA0:LA1:LB0:LB1: likelihoods for models h0, h1 based on the C1-CSV pair, and models h0, h1 based on the C2-CSV pair, respectfully.
+
+
+# Release Notes
+
+v3.1.0, 2020.08.01, revised significantly the PEA method to enable a full genome coverage on SV calling; and kept only PEA method in this release (without previous method for SNV and INDEL analysis)
+
+v3.0.0, 2020.01.01, allowed genome structure variation calling using the PEA method.
+
+v2.0.0, 2019.04.01, allowed parallel processing, optimized I/O, optimized pipeline, output in vcf format, and fixed bugs
+
+v1.21, 2018.08.18, fixed bugs
+
+v1.2, 2017.05.01, allowed INDEL calling, release version
 
 v1.1.3, 2017.01.09, users can change the min mapQ, default to 40
 
-v1.1.2, 2016.12.30, fixing bugs
+v1.1.2, 2016.12.30, fixed bugs
 
 v1.1.1, 2016.12.29, update read_mpileup to consider indels
 
-V1.1, 2016.07.25, fixing bugs, release version
+V1.1, 2016.07.25, fixed bugs, release version
 
 v1.0, 2016.04.26, release version
 
@@ -156,6 +260,8 @@ v0.0.3, 2016.04.22, read_mpilup function returns mindepth fails before returning
 
 v0.0.3, 2016.04.22, default mapQ change from 20 to 40
 
-v0.0.2, 2016.04.19, fix bugs - jump mpileup file column not fit problem.
+v0.0.2, 2016.04.19, fixed bugs - jump mpileup file column not fit problem.
 
-v0.0.1, 2016.03, add likelihood ratio test based on null distribution from the data resampling.    
+v0.0.1, 2016.03, added likelihood ratio test based on null distribution from the data resampling.
+
+
