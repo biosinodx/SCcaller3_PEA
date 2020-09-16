@@ -48,7 +48,7 @@ Input data requirement
 3. reference genome in fasta format
 
 
-#####
+####
 USAGE STEP 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
 -
 This step is done with using Manta, but it can be replaced by other software tools. 
@@ -100,7 +100,7 @@ ${bulk} is the bulk DNA sample name.
 
 ${cell} is the single cell sample name.
 
-#####
+######
 USAGE STEP 2. SV-type annotation
 -
 2.1 for germline SVs, run the following shell scripts in Linux,
