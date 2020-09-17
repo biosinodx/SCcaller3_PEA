@@ -136,11 +136,11 @@ USAGE STEP 3. enhanced reference genome construction, realignment and SV calling
 -
 3.1 for germline SVs, run the following shell scripts in Linux,
 
-${vcf}=$(pwd)/${sn}.manta.sc3input.vcf
+vcf=$(pwd)/${sn}.manta.sc3input.vcf
 
 python3 pea_s3p1.py \
   --cellid ${sn} \
-  --dellyvcf ${vcf} \
+  --vcf ${vcf} \
   --wkdir ${sn} \
   --cbam ${bam} \
   -g ${ref} \
@@ -148,7 +148,7 @@ python3 pea_s3p1.py \
 
 python3 pea_s3p2.py \
   --cellid ${sn} \
-  --dellyvcf ${vcf} \
+  --vcf ${vcf} \
   --wkdir ${sn} \
   --cbam ${bam} \
   -g ${ref} \
@@ -169,11 +169,11 @@ ${s} is the line number of the first SV in the ${bulk}.${cell}.manta.sc3input.vc
 
 3.2 for somatic SVs, run the following shell scripts in Linux, 
 
-${vcf}=$(pwd)/${bulk}.${cell}.manta.sc3input.vcf
+vcf=$(pwd)/${bulk}.${cell}.manta.sc3input.vcf
 
 python3 pea_s3p1.py \
   --cellid ${cell} \
-  --dellyvcf ${vcf} \
+  --vcf ${vcf} \
   --wkdir ${bulk}.${cell} \
   --cbam ${cell_bam} \
   -g ${ref} \
@@ -181,7 +181,7 @@ python3 pea_s3p1.py \
 
 python3 pea_s3p2.py \
   --cellid ${cell} \
-  --dellyvcf ${vcf} \
+  --vcf ${vcf} \
   --wkdir ${bulk}.${cell} \
   --cbam ${cell_bam} \
   -g ${ref} \
