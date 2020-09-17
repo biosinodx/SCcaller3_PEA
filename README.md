@@ -17,7 +17,6 @@ Email: biosinodx@gmail.com (X.D.), xiao.dong@einsteinmed.org (X.D.), spsc83@gmai
 
 Licensed under the GNU Affero General Public License version 3 or later
 
-
 #####
 Dependence
 -
@@ -47,9 +46,8 @@ Input data requirement
 
 3. reference genome in fasta format
 
-
 #####
-USAGE STEP 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
+Usage step 1. Calling candidate breakpoint ends (BPEs) and assembly of their contigs
 -
 This step is done with using Manta, but it can be replaced by other software tools. 
 
@@ -101,7 +99,7 @@ ${bulk} is the bulk DNA sample name.
 ${cell} is the single cell sample name.
 
 #####
-USAGE STEP 2. SV-type annotation
+Usage step 2. SV-type annotation
 -
 2.1 for germline SVs, run the following shell scripts in Linux,
 
@@ -132,7 +130,7 @@ ${bulk} is the bulk DNA sample name.
 ${cell} is the single cell sample name.
 
 #####
-USAGE STEP 3. enhanced reference genome construction, realignment and SV calling
+Usage step 3. Enhanced reference genome construction, realignment and SV calling
 -
 3.1 for germline SVs, run the following shell scripts in Linux,
 
@@ -229,6 +227,10 @@ refBSVcount: no. reads supporting SV genotype in the enhance reference genome C2
 
 LA0:LA1:LB0:LB1: likelihoods for models h0, h1 based on the C1-CSV pair, and models h0, h1 based on the C2-CSV pair, respectfully.
 
+#####
+Demo
+-
+See content in the demo.tar.bz2 file for demo data and scripts. The analysis in demo should be done in about 5 min on a linux workstation (tested on a 32 CPU core 256GB RAM workstation).
 
 #####
 Release Notes
