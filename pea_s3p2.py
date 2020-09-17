@@ -10,7 +10,7 @@ from scipy.stats import binom
 #Parse commandline arguments
 parser=argparse.ArgumentParser(description="sc3_rewrite.py\nBased on delly vcf output")
 parser.add_argument("--cellid",type=str, required=True, help="Cell ID. Required.")
-parser.add_argument("--dellyvcf",type=str, required=True, help="Full pwd to DELLY output in vcf format. Required.")
+parser.add_argument("--vcf",type=str, required=True, help="Input vcf file. Required.")
 parser.add_argument("--wkdir",type=str, default="./", required=False, help="working dir. default: ./")
 parser.add_argument("--cbam",type=str, required=True, help="Full pwd to cell bam. Required.")
 parser.add_argument("-g","--genome",type=str, required=True, help="Full pwd to the reference genome. Required.")
@@ -27,20 +27,14 @@ parser.add_argument("--theta", type=float, help="Default theta for sccaller. def
 parser.add_argument("--limit", type=int, help="Max. no. read for considering a SV. default:1000", default=1000)
 args=parser.parse_args()
 
-# cell="G12878_1"
 cell=args.cellid
-delly_vcf=open(args.dellyvcf, 'r')
-# delly_vcf=open('/data/x001/xdong/2019-sccaller3/delly/G12878_1.vcf', 'r')
+delly_vcf=open(args.vcf, 'r')
 ref_fasta=open(args.genome, 'r')
-# ref_fasta=open('/data/x001/xdong/reference/homo_sapiens/GRCh38.broad/references-hg38-v0-Homo_sapiens_assembly38.fasta', 'r')
 cell_bam=args.cbam
-# cell_bam='/data/x001/xdong/2019-sccaller3/bam/G12878_1.hg38.gatk3.bam'
 wkdir=args.wkdir
-# wkdir='./'
 
 # midresult=False; # report middle result yes or no
 midresult=args.report
-# flankingregion=100
 flankingregion=args.flank
 processing_start=args.start
 processing_end=args.end
